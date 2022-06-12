@@ -110,7 +110,8 @@ class AccountViewSet(viewsets.ViewSet):
                 'message': "Please check input",
                 'errors': serializer.errors,
             }, status=400)
-
+        
+        # save() 保存到数据库
         user = serializer.save()
         django_login(request, user)
         return Response({
