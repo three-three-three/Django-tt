@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from accounts.api.serializers import UserSerializer, LoginSerializer, SignupSerializer
 from django.contrib.auth import (
@@ -17,12 +18,16 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = permissions.IsAuthenticated
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+'''没有这个permission就打不开这个localhost/api/user'''
 
 
 class AccountViewSet(viewsets.ViewSet):
     '''界面出现用户输入用户名和密码'''
-    serializer_class = SignupSerializer
+    serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
 
     """我只能用get去请求"""
 
@@ -63,11 +68,12 @@ class AccountViewSet(viewsets.ViewSet):
         password = serializer.validated_data['password']
 
         '''User不存在就无法登录，抛出异常'''
-        if not User.objects.filter(username=username).exists():
+        # 这一段移到serializer里的validate了，
+        '''if not User.objects.filter(username=username).exists():
             return Response({
                 "success": False,
                 "message": "User does not exit",
-            }, status=400)
+            }, status=400)'''
 
         user = django_authenticate(username=username, password=password)
         if not user or user.is_anonymous:
@@ -112,7 +118,7 @@ class AccountViewSet(viewsets.ViewSet):
                 'message': "Please check input",
                 'errors': serializer.errors,
             }, status=400)
-        
+
         # save() 保存到数据库
         user = serializer.save()
         django_login(request, user)
