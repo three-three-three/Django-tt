@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
 
 
 # Application definition
+# 用startapp创建的文件夹都记得要加进来
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
 
     'accounts',
+    'tweets',
 ]
 
 REST_FRAMEWORK = {
