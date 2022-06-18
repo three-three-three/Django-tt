@@ -26,7 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class AccountViewSet(viewsets.ViewSet):
     '''界面出现用户输入用户名和密码'''
-    serializer_class = LoginSerializer
+    serializer_class = SignupSerializer
     permission_classes = (AllowAny,)
 
     """我只能用get去请求"""
@@ -53,6 +53,7 @@ class AccountViewSet(viewsets.ViewSet):
         # request.data就是用户请求[POST]的数据
         '''在开发中，凡是要检测用户输入，都是把request.data传到serializer中
         ，然后调用is_valid()，错误会放在.errors中'''
+        # serializer 相当于经过处理后的data
         serializer = LoginSerializer(data=request.data)
         '''输入不合法，返回400 Bad Request'''
         '''errors也是django serializer自带的，带有错误信息'''
@@ -75,6 +76,7 @@ class AccountViewSet(viewsets.ViewSet):
                 "message": "User does not exit",
             }, status=400)'''
 
+        # authenticate 是 django 自带的一个函数，会在验证用户名和密码后返回一个user对象
         user = django_authenticate(username=username, password=password)
         if not user or user.is_anonymous:
             return Response({
