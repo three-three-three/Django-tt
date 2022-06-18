@@ -48,6 +48,9 @@ sudo mysql -u root << EOF
 EOF
 # fi
 
+# 本项目的superuser（admin的那个号），不是通过这个provision文件配置的，是通过vagrant命令行
+# python manage.py createsuperuser 创建的
+# 只有admin有权限查看后台用户
 
 # 如果想直接进入/vagrant路径下
 # 请输入vagrant ssh命令进入

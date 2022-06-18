@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
+  # 相当于一种转发，访问localhost不需要加上端口号8000，直接通过主机就可以访问
   config.vm.network "forwarded_port", guest: 8000, host: 80
 
   # Create a forwarded port mapping which allows access to a specific port
