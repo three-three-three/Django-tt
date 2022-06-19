@@ -17,6 +17,29 @@ class Tweet(models.Model):
     # auto_now 每次更新时都会更新时间
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        index_together = (('user', 'created_at'),)
+        ordering = ('user', '-created_at')
+        '''
+        index_together = (('user', 'created_at'),)建立了联合索引，
+        user为第一关键字，created_at为第二关键字
+        类似于在看不见的地方建立了如下表单：
+        [
+        (user1, created_at1, id1),
+        (user1, created_at2, id2),
+        (user2, created_at3, id3),
+        (user2, created_at5, id4),
+        (user3, created_at4, id5),
+        ]
+        
+        这里创建联合索引，用于views中
+         tweets = Tweet.objects.filter(
+            user_id=request.query_params['user_id']
+        ).order_by('-created_at')
+        
+        改变了Model，记得要migration
+        '''
+
     @property
     def hours_to_now(self):
         # datetime.now 不带时区信息，需要增加上 utc 的时区信息

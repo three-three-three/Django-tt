@@ -1,7 +1,6 @@
-from django.test import TestCase
+from testing.testcases import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-
 
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
@@ -17,18 +16,11 @@ class AccountApiTests(TestCase):
         # username email password都是一次性自定义，测试结束后会被销毁
         # self.client = APIClient()相当于一种格式
         self.client = APIClient()
-        self.user = self.createUser(
+        self.user = self.create_user(
             username='admin',
             email='daiertang9@gmail.com',
             password='correct password',
         )
-
-    def createUser(self, username, email, password):
-        # 不能写成 User.objects.create()
-        # User.objects.create() 可以直接在面板上查看密码，密码不能用来authenticate
-        # 因为 password 需要被加密, username 和 email 需要进行一些 normalize 处理
-        # User.objects.create_user 对密码进行加密，并且会规范化输入
-        return User.objects.create_user(username, email, password)
 
     def test_login(self):
         # 每个测试函数必须以 test_ 开头，才会被自动调用进行测试
