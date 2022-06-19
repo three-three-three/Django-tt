@@ -18,10 +18,14 @@ from django.urls import include, path
 from rest_framework import routers
 from accounts.api import views
 from django.conf import settings
+from tweets.api.views import TweetViewSet
+
+# 创建一个新的views要指定url路径
 
 router = routers.DefaultRouter()
 router.register(r'api/users', views.UserViewSet)
 router.register(r'api/accounts', views.AccountViewSet, basename='accounts')
+router.register(r'api/tweets', TweetViewSet, basename='tweets')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

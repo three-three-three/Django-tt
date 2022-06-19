@@ -13,6 +13,8 @@ from django.contrib.auth import (
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    # 这里直接继承了ModelViewSet，Django 默认了 增删查改 都可以做
+    # 但是不是所有的接口都要做这些操作，因为不是所有人都是admin权限，所以一般不用ModelViewSet
     """
     API endpoint that allows users to be viewed or edited.
     """
