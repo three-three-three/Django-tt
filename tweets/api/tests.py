@@ -79,19 +79,21 @@ class TweetApiTests(TestCase):
         返回的是TweetSerializer(tweet).data，于是查看tweets/api/serializers.py/TweetSerializer
         TweetSerializer fields = ('id', 'user', 'created_at', 'content') 这些就是response.data
         response.data['user'] 来自 user = UserSerializerForTweet()
-        于是查看accounts/api/serializer UserSerializerForTweet
+        于是查看accounts/api/serializers UserSerializerForTweet
         发现UserSerializerForTweet的field没有id，只有username
         于是加上id,发现测试可以跑通
         但是UserSerializerForTweet 设计上不能让用户看推文时看到user的id
         于是UserSerializerForTweet的fields还是只保留username
         选择username作为用来assertEqual
         
+        [2022/6/26] 还是加上了id
+        
         serializer是用来接收传入request.data, 以及处理数据
         1. 序列化,序列化器会把模型对象转换成字典,经过response以后变成json字符串
         e.g.  return Response(TweetSerializer(tweet).data, status=201)
         
         2. 反序列化,把客户端发送过来的数据,经过request以后变成字典,序列化器可以把字典转成模型
-        e.g. serializer = TweetCreateSerializer(
+        e.g. serializers = TweetCreateSerializer(
             data=request.data,
             context={'request': request},
         )
@@ -99,6 +101,6 @@ class TweetApiTests(TestCase):
         3. 反序列化,完成数据校验功能
         e.g. # 检查用户是否存在
             def validate(self, data):
-        e.g. if not serializer.is_valid():
+        e.g. if not serializers.is_valid():
 
         '''

@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
 
 
 # Application definition
-# 用startapp创建的文件夹都记得要加进来
+# 用startapp创建的文件夹都记得要加进来，否则不能makemigrations
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'accounts',
     'tweets',
+    'friendships'
 ]
 
 REST_FRAMEWORK = {

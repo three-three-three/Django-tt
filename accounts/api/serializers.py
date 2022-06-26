@@ -5,14 +5,20 @@ from rest_framework import serializers, exceptions
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('id', 'username', 'email')
 
 
 class UserSerializerForTweet(serializers.ModelSerializer):
     # 看tweets时不显示邮箱，也不显示用户id
     class Meta:
         model = User
-        fields = ('username', )
+        fields = ('id', 'username')
+
+
+class UserSerializerForFriendship(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username')
 
 
 # 帮助我们去查看用户有没有输入username和password

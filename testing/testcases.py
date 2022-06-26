@@ -9,8 +9,8 @@ from tweets.models import Tweet
 
 
 class TestCase(DjangoTestCase):
-    # 把password设置成了非必填
-    def create_user(self, username, email, password=None):
+    # 把password和email设置成了非必填
+    def create_user(self, username, email=None, password=None):
         if password is None:
             password = 'generic password'
         # 不能写成 User.objects.create()
