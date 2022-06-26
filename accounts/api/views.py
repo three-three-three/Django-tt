@@ -55,7 +55,7 @@ class AccountViewSet(viewsets.ViewSet):
         # request.data就是用户请求[POST]的数据
         '''在开发中，凡是要检测用户输入，都是把request.data传到serializer中
         ，然后调用is_valid()，错误会放在.errors中'''
-        # serializer 相当于经过处理后的data
+        # serializers 相当于经过处理后的data
         serializer = LoginSerializer(data=request.data)
         '''输入不合法，返回400 Bad Request'''
         '''errors也是django serializer自带的，带有错误信息'''
