@@ -13,7 +13,9 @@ class TweetApiTests(TestCase):
     def setUp(self):
         # APIClient()是测试时执行get post请求的人
         # user2是一个单纯被访问的数据
-        self.anonymous_client = APIClient()
+        # 在testing/testcases里面定义了anonymous_client，
+        # 直接在下面调用self.anonymous_client就可以了，不需要再重复声明
+        # self.anonymous_client = APIClient()
 
         self.user1 = self.create_user('user1', 'user1@twitter.com')
         self.tweets1 = [

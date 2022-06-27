@@ -2,7 +2,6 @@ from friendships.models import Friendship
 from rest_framework.test import APIClient
 from testing.testcases import TestCase
 
-
 FOLLOW_URL = '/api/friendships/{}/follow/'
 UNFOLLOW_URL = '/api/friendships/{}/unfollow/'
 FOLLOWERS_URL = '/api/friendships/{}/followers/'
@@ -12,7 +11,9 @@ FOLLOWINGS_URL = '/api/friendships/{}/followings/'
 class FriendshipApiTests(TestCase):
 
     def setUp(self):
-        self.anonymous_client = APIClient()
+        # 在testing/testcases里面定义了anonymous_client，
+        # 直接在下面调用self.anonymous_client就可以了，不需要再重复声明
+        # self.anonymous_client = APIClient()
 
         self.linghu = self.create_user('linghu')
         self.linghu_client = APIClient()
@@ -23,6 +24,7 @@ class FriendshipApiTests(TestCase):
         self.dongxie_client.force_authenticate(self.dongxie)
 
         # create followings and followers for dongxie
+        # dongxie 关注了3个人，被2个人关注
         for i in range(2):
             follower = self.create_user('dongxie_follower{}'.format(i))
             Friendship.objects.create(from_user=follower, to_user=self.dongxie)
@@ -36,20 +38,35 @@ class FriendshipApiTests(TestCase):
         # 需要登录才能 follow 别人
         response = self.anonymous_client.post(url)
         self.assertEqual(response.status_code, 403)
-        # 要用 get 来 follow
+        # 要用 post 来 follow
         response = self.dongxie_client.get(url)
         self.assertEqual(response.status_code, 405)
         # 不可以 follow 自己
         response = self.linghu_client.post(url)
         self.assertEqual(response.status_code, 400)
+
         # follow 成功
         response = self.dongxie_client.post(url)
         self.assertEqual(response.status_code, 201)
+        # views里follow成功的话会返回follow的instance，这里也测试一下
+        # 返回的instance由FollowingSerializer包装，包含created_at和user，先分别测试存不存在
+        self.assertEqual('created_at' in response.data, True)
+        self.assertEqual('user' in response.data, True)
+        # dongxie follow linghu
+        self.assertEqual(response.data['user']['id'], self.linghu.id)
+        self.assertEqual(response.data['user']['username'], self.linghu.username)
+
         # 重复 follow 静默成功
         response = self.dongxie_client.post(url)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['duplicate'], True)
+        '''
+        不写静默的话，
+        response = self.dongxie_client.post(url)
+        self.assertEqual(response.status_code, 400)
+        '''
         # 反向关注会创建新的数据
+        # 注意create的时候都要写count
         count = Friendship.objects.count()
         response = self.linghu_client.post(FOLLOW_URL.format(self.dongxie.id))
         self.assertEqual(response.status_code, 201)
