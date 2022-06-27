@@ -61,5 +61,6 @@ class TweetViewSet(viewsets.GenericViewSet):
             }, status=400)
         # .save()会调用create方法
         tweet = serializer.save()
+        # newsfeeds/services/ 创建推文时自动分发给粉丝
         NewsFeedService.fanout_to_followers(tweet)
         return Response(TweetSerializer(tweet).data, status=201)

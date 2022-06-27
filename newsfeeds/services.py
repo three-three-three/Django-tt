@@ -3,7 +3,7 @@ from friendships.services import FriendshipService
 
 
 class NewsFeedService(object):
-
+    # 在tweets/api/views.py 创建推文时自动分发给粉丝
     @classmethod
     def fanout_to_followers(cls, tweet):
         # 错误的方法

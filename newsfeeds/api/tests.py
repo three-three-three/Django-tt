@@ -35,20 +35,25 @@ class NewsFeedApiTests(TestCase):
         # 不能用 post
         response = self.linghu_client.post(NEWSFEEDS_URL)
         self.assertEqual(response.status_code, 405)
-        # 一开始啥都没有
+        # 一开始啥都没有，linghu没有newsfeeds
         response = self.linghu_client.get(NEWSFEEDS_URL)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['newsfeeds']), 0)
         # 自己发的信息是可以看到的
         self.linghu_client.post(POST_TWEETS_URL, {'content': 'Hello World'})
         response = self.linghu_client.get(NEWSFEEDS_URL)
+        # linghu发了一条，linghu就有一条newsfeed
         self.assertEqual(len(response.data['newsfeeds']), 1)
         # 关注之后可以看到别人发的
         self.linghu_client.post(FOLLOW_URL.format(self.dongxie.id))
         response = self.dongxie_client.post(POST_TWEETS_URL, {
             'content': 'Hello Twitter',
         })
+        # 这里的response是tweets的views.py里的response，由TweetSerializer包装，包含发帖人的id
         posted_tweet_id = response.data['id']
         response = self.linghu_client.get(NEWSFEEDS_URL)
+        # linghu关注了dongxie,dongxie发了一条
+        # lingh现在有两条newsfeed
         self.assertEqual(len(response.data['newsfeeds']), 2)
+        # newsfeeds是倒序排列，第0条就是dongxie发的
         self.assertEqual(response.data['newsfeeds'][0]['tweet']['id'], posted_tweet_id)
