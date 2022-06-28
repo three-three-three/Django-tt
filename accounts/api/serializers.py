@@ -21,6 +21,10 @@ class UserSerializerForFriendship(serializers.ModelSerializer):
         fields = ('id', 'username')
 
 
+class UserSerializerForComment(UserSerializerForTweet):
+    pass
+
+
 # 帮助我们去查看用户有没有输入username和password
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
