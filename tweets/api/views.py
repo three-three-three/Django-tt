@@ -1,9 +1,10 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from tweets.api.serializers import TweetSerializer, TweetCreateSerializer
+from tweets.api.serializers import TweetSerializer, TweetCreateSerializer, TweetSerializerWithComments
 from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
+from utils.decorators import required_params
 
 
 class TweetViewSet(viewsets.GenericViewSet):
@@ -16,17 +17,24 @@ class TweetViewSet(viewsets.GenericViewSet):
     def get_permissions(self):
         # 进行权限验证
         # self.action 里的 action 就是指带有request的方法 list()
-        if self.action == 'list':
+        if self.action in ['list', 'retrieve']:
             # 如果只是查看某个用户的推文，就是所有用户都可以，否则（create新推文），就必须要登录
             return [AllowAny()]
         return [IsAuthenticated()]
 
+    def retrieve(self, request, *args, **kwargs):
+        tweet = self.get_object()
+        return Response(TweetSerializerWithComments(tweet).data)
+
+    @required_params(params=['user_id'])
     def list(self, request):
         """
         重载 list 方法，不列出所有 tweets，必须要求指定 user_id 作为筛选条件
+        GET query_param
+        POST data
         """
-        if 'user_id' not in request.query_params:
-            return Response('missing user_id', status=400)
+        '''if 'user_id' not in request.query_params:
+            return Response('missing user_id', status=400)'''
 
         # 这句查询会被翻译为
         # select * from twitter_tweets
