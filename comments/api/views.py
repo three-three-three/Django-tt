@@ -22,9 +22,10 @@ class CommentViewSet(viewsets.GenericViewSet):
     # 样的serializer去渲染
     serializer_class = CommentSerializerForCreate
     queryset = Comment.objects.all()
+    filterset_fields = ('tweet_id',)
 
     # POST /api/comments/ -> create
-    # GET /api/comments/ -> list
+    # GET /api/comments/?tweet_id=1 -> list  末尾没有/！！，找了好久的bug，气死我了
     # 上面是detail = false的方法 url没有id
     # 下面是detail = true的方法，url有id，针对某一个object去访问
     # GET /api/comments/1 -> retrieve
@@ -44,6 +45,23 @@ class CommentViewSet(viewsets.GenericViewSet):
             # 对未登录用户产生困扰
             return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
+
+    def list(self, request, *args, **kwargs):
+        if 'tweet_id' not in request.query_params:
+            return Response(
+                {
+                    'message': 'missing tweet_id in request',
+                    'success': False,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        queryset = self.get_queryset()
+        comments = self.filter_queryset(queryset).order_by('created_at')
+        serializer = CommentSerializer(comments, many=True)
+        return Response(
+            {'comments': serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
     def create(self, request, *args, **kwargs):
         data = {
