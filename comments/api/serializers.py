@@ -2,8 +2,14 @@ from accounts.api.serializers import UserSerializerForComment
 from comments.models import Comment
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from tweets.api.serializers import TweetSerializer
 from tweets.models import Tweet
+
+'''
+[DEBUG日志]：用不到的import要删掉，之前保留了import TweetSerializer，
+单元测试过不了，显示tweets/api/serializers里无法import CommentSerializer
+后来删掉import TweetSerializer之后就跑通了
+怀疑相互查找serializer形成了死循环
+'''
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -54,7 +60,7 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
 class CommentSerializerForUpdate(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('content','tweet_id', 'user_id')
+        fields = ('content', 'tweet_id', 'user_id')
 
     def update(self, instance, validated_data):
         instance.content = validated_data['content']
