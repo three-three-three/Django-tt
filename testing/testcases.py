@@ -51,6 +51,12 @@ class TestCase(DjangoTestCase):
         )
         return instance
 
+    def create_user_and_client(self, *args, **kwargs):
+        user = self.create_user(*args, **kwargs)
+        client = APIClient()
+        client.force_authenticate(user)
+        return user, client
+
 
 '''
 在进行单元测试时，不同的app有相同的步骤，比如测试accounts和tweets都需要创建用户
